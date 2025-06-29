@@ -55,7 +55,7 @@ jobs:
           sleep 1 # Wait for the server to start
           curl --fail http://127.0.0.1:8003/test.php
 
-          # Test the DocumentRoot when it is set to a different directory.
+          # Test the DocumentRoot when it is has been overridden and contains a public directory.
           docker run --name test3 -d -p 8004:80 \
               -v $PWD/tests/fixtures/documentroot:/srv/moodle \
               -e APACHE_DOCUMENT_ROOT=/srv/moodle \
@@ -63,7 +63,7 @@ jobs:
           sleep 1 # Wait for the server to start
           curl --fail http://127.0.0.1:8004/notpublic.php
 
-          # Test the DocumentRoot is not guessed when it has been overriden.
+          # Test the DocumentRoot is not guessed when it has been overriden and does not contain a public directory.
           docker run --name test4 -d -p 8005:80 \
               -v $PWD/tests/fixtures/documentroot/public:/srv/moodle \
               -e APACHE_DOCUMENT_ROOT=/srv/moodle \
@@ -79,14 +79,6 @@ jobs:
           docker logs test2
           docker logs test3
           docker logs test4
-
-      - name: Cleanup docker images
-        run: |
-          docker rm -f test0
-          docker rm -f test1
-          docker rm -f test2
-          docker rm -f test3
-          docker rm -f test4
 
   Publish:
     # Completely avoid forks and pull requests to try this job.
